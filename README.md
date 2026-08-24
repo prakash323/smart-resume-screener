@@ -275,6 +275,9 @@ Job description:
 {jobDescriptionText}
 ---
 ```
+## Demo Video
+
+Watch the Smart Resume Screener in action:
 https://github.com/user-attachments/assets/858ffb0f-7da3-4628-8b29-a7ece61543b3
 ## Dashboard
 
