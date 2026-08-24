@@ -257,8 +257,3 @@ any OpenRouter model slug - the app doesn't hardcode a single provider. Suggeste
 (`GET /api/models`) are a starting point, not a limit; enter any slug from
 [openrouter.ai/models](https://openrouter.ai/models) to compare extraction/scoring quality
 across providers.
-
-## Demo video
-
-A 2-3 minute walkthrough (upload → extract → create job description → score → shortlist)
-should be recorded separately and linked here before submission.
