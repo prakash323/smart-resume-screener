@@ -278,15 +278,15 @@ Job description:
 
 ## Dashboard
 
-![Dashboard screenshot](docs/screenshots/dashboard.png)
+Upload panel, job description panel, and the model picker (showing a live, corrected model
+slug - `anthropic/claude-sonnet-5` - selected):
 
-*(Screenshot: run `npm run dev` in `frontend/` and `mvn spring-boot:run` in `backend/`, open
-`http://localhost:5173`, run through an upload → job description → screening flow, then save a
-screenshot to `docs/screenshots/dashboard.png` - it'll render above automatically once committed.)*
+![Dashboard - upload and job description panels](docs/screenshots/dashboard.png)
 
-The dashboard has three panels: an upload form (candidate name, email, résumé file, and the model
-selector) on the left, a job description form and active-JD picker on the right, and a ranked
-shortlist table with a minimum-score filter across the bottom.
+The resulting ranked shortlist, real output from `openai/gpt-4o-mini` against a real job
+description:
+
+![Dashboard - ranked shortlist with scores and justifications](docs/screenshots/dashboard-shortlist.png)
 
 ## Trying different models
 
