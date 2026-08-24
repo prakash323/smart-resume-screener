@@ -275,7 +275,7 @@ Job description:
 {jobDescriptionText}
 ---
 ```
-
+https://github.com/user-attachments/assets/858ffb0f-7da3-4628-8b29-a7ece61543b3
 ## Dashboard
 
 Upload panel, job description panel, and the model picker (showing a live, corrected model
