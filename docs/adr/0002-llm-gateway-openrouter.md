@@ -9,7 +9,7 @@ not mandate a specific provider. The project owner holds an OpenRouter API key a
 explicitly wants to try several different underlying models (OpenAI, Anthropic, Meta,
 Google, etc.) without changing code each time - OpenRouter's value is being a single
 OpenAI-compatible gateway in front of many providers, addressed by one API key and a
-`provider/model` slug per request (e.g. `openai/gpt-4o-mini`, `anthropic/claude-3.5-sonnet`).
+`provider/model` slug per request (e.g. `openai/gpt-4o-mini`, `anthropic/claude-sonnet-5`).
 
 ## Decision
 - Define a small provider-agnostic `LlmClient` interface (`complete(system, user, model)`)

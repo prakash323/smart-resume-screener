@@ -57,12 +57,12 @@ class ExtractionServiceTest {
 
     @Test
     void usesModelOverrideWhenProvided() {
-        when(llmClient.complete(anyString(), anyString(), eq("anthropic/claude-3.5-sonnet")))
+        when(llmClient.complete(anyString(), anyString(), eq("anthropic/claude-sonnet-5")))
                 .thenReturn("{\"skills\":[],\"experience\":[],\"education\":[]}");
 
-        extractionService.extract("resume text", "anthropic/claude-3.5-sonnet");
+        extractionService.extract("resume text", "anthropic/claude-sonnet-5");
 
-        org.mockito.Mockito.verify(llmClient).complete(anyString(), anyString(), eq("anthropic/claude-3.5-sonnet"));
+        org.mockito.Mockito.verify(llmClient).complete(anyString(), anyString(), eq("anthropic/claude-sonnet-5"));
     }
 
     @Test

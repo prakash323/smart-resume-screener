@@ -97,10 +97,10 @@ class OpenRouterLlmClientTest {
             exchange.close();
         });
 
-        client.complete("system prompt text", "user prompt text", "anthropic/claude-3.5-sonnet");
+        client.complete("system prompt text", "user prompt text", "anthropic/claude-sonnet-5");
 
         assertThat(capturedBody.toString())
-                .contains("\"model\":\"anthropic/claude-3.5-sonnet\"")
+                .contains("\"model\":\"anthropic/claude-sonnet-5\"")
                 .contains("system prompt text")
                 .contains("user prompt text");
     }

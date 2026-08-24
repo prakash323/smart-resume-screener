@@ -20,10 +20,10 @@ public class ModelController {
     private static final List<String> SUGGESTED_MODELS = List.of(
             "openai/gpt-4o-mini",
             "openai/gpt-4o",
-            "anthropic/claude-3.5-sonnet",
-            "anthropic/claude-3.5-haiku",
+            "anthropic/claude-sonnet-5",
+            "anthropic/claude-haiku-4.5",
             "meta-llama/llama-3.1-70b-instruct",
-            "google/gemini-flash-1.5"
+            "google/gemini-3.5-flash"
     );
 
     private final OpenRouterProperties properties;
