@@ -132,35 +132,39 @@ No tests call the real OpenRouter API - the LLM client is mocked everywhere exce
 
 ### Sample: upload + extract
 
+Real output from a live run against OpenRouter (`openai/gpt-4o-mini`) - not a fabricated example:
+
 ```bash
 curl -X POST http://localhost:8080/api/resumes \
-  -F "file=@jane_doe_resume.pdf" \
-  -F "candidateName=Jane Doe" \
-  -F "email=jane@example.com" \
-  -F "model=openai/gpt-4o-mini"
+  -F "file=@ananya_rao_resume.txt" \
+  -F "candidateName=Ananya Rao" \
+  -F "email=ananya.rao@example.com"
 ```
 
 ```json
 {
   "id": 1,
-  "candidateName": "Jane Doe",
-  "email": "jane@example.com",
-  "fileName": "jane_doe_resume.pdf",
+  "candidateName": "Ananya Rao",
+  "email": "ananya.rao@example.com",
+  "fileName": "resume_strong.txt",
   "extractedData": {
-    "skills": ["Java", "Spring Boot", "Kubernetes", "PostgreSQL"],
-    "experience": ["Senior Backend Engineer at Acme Corp (2021-2024)", "Backend Engineer at Initech (2018-2021)"],
-    "education": ["B.Tech, Computer Science, XYZ University (2014-2018)"]
+    "skills": ["Java", "Spring Boot", "Spring Data JPA", "REST APIs", "PostgreSQL", "MySQL", "Docker", "AWS ECS", "JUnit 5", "Testcontainers", "Jenkins", "Git", "Kafka (basic)"],
+    "experience": ["Senior Backend Engineer at Fintech Solutions Pvt Ltd (2022 - Present)", "Backend Engineer at Initech Systems (2020 - 2022)"],
+    "education": ["B.E. in Computer Science, RV College of Engineering (2016 - 2020)"]
   },
-  "createdAt": "2026-08-24T10:15:30Z"
+  "createdAt": "2026-08-24T10:49:30Z"
 }
 ```
 
 ### Sample: score + shortlist
 
+Same live run, scored against a "Backend Engineer" job description requiring Java/Spring Boot,
+a relational database, Docker/AWS, and automated testing:
+
 ```bash
 curl -X POST http://localhost:8080/api/screenings \
   -H "Content-Type: application/json" \
-  -d '{"resumeId": 1, "jobDescriptionId": 1, "model": "openai/gpt-4o-mini"}'
+  -d '{"resumeId": 1, "jobDescriptionId": 1}'
 ```
 
 ```json
@@ -168,11 +172,33 @@ curl -X POST http://localhost:8080/api/screenings \
   "id": 1,
   "resumeId": 1,
   "jobDescriptionId": 1,
-  "score": 9,
-  "justification": "Strong match: candidate has direct Java/Spring Boot and Kubernetes experience matching the core requirements, plus relevant seniority. Minor gap: no explicit PostgreSQL mention in experience despite it being listed as a skill.",
+  "score": 10,
+  "justification": "The candidate has 4 years of experience building REST APIs in Java and Spring Boot, which exceeds the 3+ years requirement. They have hands-on experience with both PostgreSQL and MySQL, as well as Docker and AWS for cloud deployment. Their use of JUnit 5 and Testcontainers for automated testing aligns perfectly with the job's requirements, and they have experience with CI/CD pipelines using Jenkins. Additionally, the candidate's basic knowledge of Kafka meets the desired familiarity with messaging systems.",
   "modelUsed": "openai/gpt-4o-mini",
-  "createdAt": "2026-08-24T10:20:00Z"
+  "createdAt": "2026-08-24T10:49:41Z"
 }
+```
+
+A second, deliberately mismatched candidate (a frontend developer's résumé) scored against the
+same job description in the same run, to confirm the model actually differentiates rather than
+scoring everyone highly:
+
+```json
+{
+  "score": 2,
+  "justification": "The candidate has strong frontend development skills with experience in JavaScript, React, and Next.js, but lacks the required backend experience in Java and Spring Boot, as well as experience building REST APIs. Additionally, there is no mention of relational databases, Docker, cloud deployment, or automated testing practices relevant to the backend role, which are critical for the position.",
+  "modelUsed": "openai/gpt-4o-mini"
+}
+```
+
+The resulting shortlist (`GET /api/screenings/shortlist?jobDescriptionId=1`) correctly ranks the
+matching candidate first:
+
+```json
+[
+  { "candidateName": "Ananya Rao",  "score": 10, "modelUsed": "openai/gpt-4o-mini" },
+  { "candidateName": "Rohit Mehta", "score": 2,  "modelUsed": "openai/gpt-4o-mini" }
+]
 ```
 
 ## LLM prompts
@@ -250,10 +276,39 @@ Job description:
 ---
 ```
 
+## Dashboard
+
+![Dashboard screenshot](docs/screenshots/dashboard.png)
+
+*(Screenshot: run `npm run dev` in `frontend/` and `mvn spring-boot:run` in `backend/`, open
+`http://localhost:5173`, run through an upload → job description → screening flow, then save a
+screenshot to `docs/screenshots/dashboard.png` - it'll render above automatically once committed.)*
+
+The dashboard has three panels: an upload form (candidate name, email, résumé file, and the model
+selector) on the left, a job description form and active-JD picker on the right, and a ranked
+shortlist table with a minimum-score filter across the bottom.
+
 ## Trying different models
 
-The dashboard's model selector (and the `model` field on the upload/screening APIs) accepts
-any OpenRouter model slug - the app doesn't hardcode a single provider. Suggested slugs
-(`GET /api/models`) are a starting point, not a limit; enter any slug from
-[openrouter.ai/models](https://openrouter.ai/models) to compare extraction/scoring quality
-across providers.
+The model selector (and the `model` field on the upload/screening APIs) accepts any OpenRouter
+model slug - the app doesn't hardcode a single provider. `GET /api/models` returns these
+suggested slugs (verified live against OpenRouter as of this writing) plus the configured
+default, but the picker also accepts free text for any other slug from
+[openrouter.ai/models](https://openrouter.ai/models):
+
+- `openai/gpt-4o-mini` (default)
+- `openai/gpt-4o`
+- `anthropic/claude-sonnet-5`
+- `anthropic/claude-haiku-4.5`
+- `meta-llama/llama-3.1-70b-instruct`
+- `google/gemini-3.5-flash`
+
+**Real cross-model comparison**, same résumé and job description, two different models:
+
+| Model | Score | Justification |
+|---|---|---|
+| `openai/gpt-4o-mini` | 2 | "The candidate has strong frontend development skills with experience in JavaScript, React, and Next.js, but lacks the required backend experience in Java and Spring Boot, as well as experience building REST APIs. ..." |
+| `anthropic/claude-haiku-4.5` | 2 | "Rohit is a frontend specialist with React, Next.js, and Tailwind CSS expertise, but the role requires a backend engineer proficient in Java and Spring Boot—technologies entirely absent from his résumé. ... His 3 years of experience matches the duration requirement, but the technical stack mismatch is fundamental and disqualifying." |
+
+Both models converged on the same score with independently-written justifications - useful
+signal that the scoring prompt is model-agnostic rather than tuned to one provider's quirks.
