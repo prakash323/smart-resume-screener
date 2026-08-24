@@ -1,0 +1,28 @@
+# Backend (Maven / Java)
+backend/target/
+backend/data/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.iml
+.idea/
+*.log
+
+# Frontend (Node / Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/coverage/
+
+# Env / secrets
+.env
+.env.local
+*.env.local
+
+# Editors / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+backend/target/site/
